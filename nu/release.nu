@@ -2,53 +2,44 @@
 # Author: hustcer
 # Created: 2025/03/21 19:15:20
 # Description: Script to release Nushell packages for various Linux distributions.
-#
-# TODO:
-#   [√] Make sure the release tag does not exist;
-#   [√] Make sure there are no uncommitted changes;
-#   [√] Update change log if required;
-#   [√] Create a release tag and push it to the remote repo;
 # Usage:
-#   Change `version` in meta.json and then run: `just release` OR `just release true`
+#   docker run -it --rm -v $"(pwd):/work" --platform linux/amd64 ubuntu:latest
+#
 
-export def 'make-release' [
-  --update-log(-u)    # Add flag to enable updating CHANGELOG.md
+# Fetch the latest Nushell release package from GitHub
+export def 'fetch pkg' [
+  arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
-
-  cd $env.NU_DISTRO_PATH
-  let releaseVer = (open meta.json | get actionVer)
-
-  if (has-ref $releaseVer) {
-  	echo $'The version ($releaseVer) already exists, Please choose another version.(char nl)'
-  	exit 5
+  const ARCH_MAP = {
+    'amd64': 'x86_64-unknown-linux-musl',
+    'arm64': 'aarch64-unknown-linux-musl',
   }
-  let majorTag = $releaseVer | split row '.' | first
-  let statusCheck = (git status --porcelain)
-  if not ($statusCheck | is-empty) {
-  	echo $'You have uncommitted changes, please commit them and try `release` again!(char nl)'
-  	exit 5
+  if $arch not-in $ARCH_MAP {
+    print $'Invalid architecture: ($arch)'; exit 1
   }
-  if ($update_log) {
-    git cliff --unreleased --tag $releaseVer --prepend CHANGELOG.md;
-    git commit CHANGELOG.md -m $'update CHANGELOG.md for ($releaseVer)'
-  }
-  # Delete tags that not exist in remote repo
-  git fetch origin --prune '+refs/tags/*:refs/tags/*'
-  let commitMsg = $'A new release for version: ($releaseVer) created by Release command.'
-  git tag $releaseVer -am $commitMsg;
-  # Remove local major version tag if exists and ignore errors
-  do -i { git tag -d $majorTag | complete | ignore }
-  git checkout $releaseVer; git tag $majorTag
-  git push origin $majorTag $releaseVer --force
+  let assets = http get https://api.github.com/repos/nushell/nushell/releases
+      | sort-by -r created_at
+      | select name created_at assets
+      | get 0
+      | get assets.browser_download_url
+  let download_url = $assets | where $it =~ ($ARCH_MAP | get $arch) | get 0
+  if not ('release' | path exists) { mkdir release }
+  cd release
+  http get $download_url | save -rpf nushell.tar.gz
+  tar -xzf nushell.tar.gz
+  cp nu-*/nu* .
 }
 
-# Check if a git repo has the specified ref: could be a branch or tag, etc.
-export def has-ref [
-  ref: string   # The git ref to check
+# Build the Nushell deb packages
+export def 'build pkg' [
+  arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
-  let checkRepo = (do -i { git rev-parse --is-inside-work-tree } | complete)
-  if not ($checkRepo.stdout =~ 'true') { return false }
-  # Brackets were required here, or error will occur
-  let parse = (do -i { git rev-parse --verify -q $ref } | complete)
-  if ($parse.stdout | is-empty) { false } else { true }
+  let version = run-external 'release/nu' '--version'
+  load-env {
+    NU_VERSION: $version
+    NU_PKG_ARCH: $arch
+    NU_VERSION_RELEASE: 1
+  }
+  nfpm pkg --packager deb
+  ls -f nushell*
 }

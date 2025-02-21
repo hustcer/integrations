@@ -88,14 +88,14 @@ license: MIT
 contents:
   # Basic file that applies to all packagers
   - src: ./release/nu
-    dst: /usr/bin/nu
+    dst: /usr/local/bin/nu
   - src: ./release/nu_plugin_inc
-    dst: /usr/bin/nu_plugin_inc
+    dst: /usr/local/bin/nu_plugin_inc
   - src: ./release/nu_plugin_query
-    dst: /usr/bin/nu_plugin_query
+    dst: /usr/local/bin/nu_plugin_query
   - src: ./release/nu_plugin_gstat
-    dst: /usr/bin/nu_plugin_gstat
+    dst: /usr/local/bin/nu_plugin_gstat
   - src: ./release/nu_plugin_polars
-    dst: /usr/bin/nu_plugin_polars
+    dst: /usr/local/bin/nu_plugin_polars
   - src: ./release/nu_plugin_formats
-    dst: /usr/bin/nu_plugin_formats
+    dst: /usr/local/bin/nu_plugin_formats
