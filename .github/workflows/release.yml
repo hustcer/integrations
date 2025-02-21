@@ -1,0 +1,74 @@
+# Description:
+#   - Setup Moonbit with GitHub Actions
+# REF:
+#   - https://github.com/marketplace/actions/checkout
+#   - https://github.com/chawyehsu/moonbit-binaries/releases
+
+name: Setup-Moonbit@Dev
+on:
+  push:
+    branches:
+      - develop
+
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  setup-moonbit:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    name: Setup MoonBit@${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Moonbit
+        uses: hustcer/setup-moonbit@develop
+
+      - name: Check Moonbit Version
+        run: |
+          moon version --all
+
+  setup-moonbit-of-version:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    name: Setup MoonBit with Version@${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Moonbit with Version
+        uses: hustcer/setup-moonbit@develop
+        with:
+          setup-core: false
+          version: 0.1.20250210+7be093d1f
+
+      - name: Check Moonbit Version
+        run: |
+          moon version --all
+
+  setup-moonbit-bleeding:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
+    runs-on: ${{ matrix.os }}
+    name: Setup MoonBit Bleeding@${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Moonbit Bleeding
+        uses: hustcer/setup-moonbit@develop
+        with:
+          version: bleeding
+
+      - name: Check Moonbit Version
+        run: |
+          moon version --all
