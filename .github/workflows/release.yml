@@ -6,6 +6,7 @@
 
 name: Nu Pkgs
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -16,8 +17,12 @@ on:
 
 jobs:
   release-pkgs:
-    runs-on: ubuntu-latest
-    name: Build Nu Pkgs
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-22.04-arm]
+    runs-on: ${{ matrix.os }}
+    name: Build Nu Pkgs@${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

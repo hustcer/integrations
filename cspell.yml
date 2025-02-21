@@ -6,6 +6,7 @@
 words:
 - nfpm
 - msvc
+- Pkgs
 - esep
 - rsort
 - cnqoj
@@ -28,4 +29,5 @@ words:
 - Infinigence
 - postremove
 - preremove
+- goreleaser
 ignorePaths:
