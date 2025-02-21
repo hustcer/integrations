@@ -1,4 +1,4 @@
-# This is an example nfpm configuration file.
+# Nushell nfpm configuration file.
 # Make sure to check the documentation at https://nfpm.goreleaser.com
 #
 # The lines below are called `modelines`. See `:help modeline`
