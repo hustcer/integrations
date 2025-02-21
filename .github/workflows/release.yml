@@ -40,7 +40,14 @@ jobs:
       - name: Check Nushell Version
         shell: nu {0}
         run: |
-          version
-          $env | print
-          use ${{ github.workspace }}/nu/release.nu
+          use ${{ github.workspace }}/nu/release.nu *
+          version | print
+          # $env | print
+          let arch = match $env.RUNNER_ARCH {
+            'X64' => 'amd64',
+            'ARM64' => 'arm64',
+            _ => 'amd64'
+          }
+          fetch pkg $arch
+          build pkg $arch
 
