@@ -35,7 +35,8 @@ export def 'fetch pkg' [
 export def 'build pkg' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
-  let version = run-external 'release/nu' '--version' | complete | get stdout | default 0.102.0
+  let version = run-external 'release/nu' '--version' | complete | get stdout
+  let version = if ($version | is-empty) { '0.102.0' } else { $version }
   load-env {
     NU_VERSION: $version
     NU_PKG_ARCH: $arch
