@@ -71,7 +71,7 @@ description: |
 # Vendor.
 # This will expand any env var you set in the field, e.g. vendor: ${VENDOR}
 # This is only used by the rpm packager.
-vendor: Nushell Community
+vendor: The Nushell Project Developers
 
 # Package's homepage.
 # This will expand any env var you set in the field, e.g. homepage: ${CI_PROJECT_URL}

@@ -20,9 +20,6 @@ set dotenv-load := true
 
 set positional-arguments := true
 
-# Just commands aliases
-alias f := fetch
-
 # Use `just --evaluate` to show env vars
 
 # Used to handle the path separator issue
@@ -41,7 +38,7 @@ default:
 # Release a new version for Nushell
 release *OPTIONS:
   @overlay use {{ join(NU_DISTRO_PATH, 'nu', 'release.nu') }}; \
-    make-release {{OPTIONS}}
+    fetch pkg {{OPTIONS}}; build pkg {{OPTIONS}}
 
 # Plugins need to be registered only once after nu v0.61
 _setup:

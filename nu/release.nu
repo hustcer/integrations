@@ -15,7 +15,7 @@ export def 'fetch pkg' [
     'arm64': 'aarch64-unknown-linux-musl',
   }
   if $arch not-in $ARCH_MAP {
-    print $'Invalid architecture: ($arch)'; exit 1
+    print $'Invalid architecture: (ansi r)($arch)(ansi reset)'; exit 1
   }
   let assets = http get https://api.github.com/repos/nushell/nushell/releases
       | sort-by -r created_at
@@ -23,6 +23,7 @@ export def 'fetch pkg' [
       | get 0
       | get assets.browser_download_url
   let download_url = $assets | where $it =~ ($ARCH_MAP | get $arch) | get 0
+  if ('release' | path exists) { rm -rf release }
   if not ('release' | path exists) { mkdir release }
   cd release
   http get $download_url | save -rpf nushell.tar.gz
@@ -34,7 +35,7 @@ export def 'fetch pkg' [
 export def 'build pkg' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
-  let version = run-external 'release/nu' '--version'
+  let version = run-external 'release/nu' '--version' | complete | get stdout | default 0.102.0
   load-env {
     NU_VERSION: $version
     NU_PKG_ARCH: $arch
