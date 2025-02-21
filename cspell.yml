@@ -4,19 +4,28 @@
 #   npx cspell --no-progress .
 
 words:
+- nfpm
 - msvc
 - esep
 - rsort
+- cnqoj
+- DISTRO
 - ECODE
 - endfor
 - dotenv
-- libtcc
+- gstat
+- mipsle
+- GOARCH
 - nushell
 - hustcer
 - rsbuild
+- modeline
+- modelines
 - justfile
 - lefthook
 - linewise
 - deepseek
 - Infinigence
+- postremove
+- preremove
 ignorePaths:

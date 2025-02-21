@@ -1,7 +1,7 @@
 # Author: hustcer
 # Created: 2025/03/21 19:15:20
 # Description:
-#   Some helper task for setup-moonbit
+#   Some helper task for making Nushell packages for various Linux distributions.
 # Ref:
 #   1. https://github.com/casey/just
 #   2. https://www.nushell.sh/book/
@@ -26,7 +26,7 @@ alias f := fetch
 # Use `just --evaluate` to show env vars
 
 # Used to handle the path separator issue
-SETUP_MOONBIT_PATH := parent_directory(justfile())
+NU_DISTRO_PATH := parent_directory(justfile())
 NU_DIR := parent_directory(`(which nu).path.0`)
 _query_plugin := if os_family() == 'windows' { 'nu_plugin_query.exe' } else { 'nu_plugin_query' }
 
@@ -38,9 +38,9 @@ _query_plugin := if os_family() == 'windows' { 'nu_plugin_query.exe' } else { 'n
 default:
   @just --list --list-prefix "··· "
 
-# Release a new version for `setup-moonbit`
+# Release a new version for Nushell
 release *OPTIONS:
-  @overlay use {{ join(SETUP_MOONBIT_PATH, 'nu', 'release.nu') }}; \
+  @overlay use {{ join(NU_DISTRO_PATH, 'nu', 'release.nu') }}; \
     make-release {{OPTIONS}}
 
 # Plugins need to be registered only once after nu v0.61

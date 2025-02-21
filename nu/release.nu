@@ -1,7 +1,7 @@
 #!/usr/bin/env nu
 # Author: hustcer
 # Created: 2025/03/21 19:15:20
-# Description: Script to release setup-moonbit
+# Description: Script to release Nushell packages for various Linux distributions.
 #
 # TODO:
 #   [√] Make sure the release tag does not exist;
@@ -15,7 +15,7 @@ export def 'make-release' [
   --update-log(-u)    # Add flag to enable updating CHANGELOG.md
 ] {
 
-  cd $env.SETUP_MOONBIT_PATH
+  cd $env.NU_DISTRO_PATH
   let releaseVer = (open meta.json | get actionVer)
 
   if (has-ref $releaseVer) {
@@ -34,7 +34,7 @@ export def 'make-release' [
   }
   # Delete tags that not exist in remote repo
   git fetch origin --prune '+refs/tags/*:refs/tags/*'
-  let commitMsg = $'A new release for version: ($releaseVer) created by Release command of setup-moonbit.'
+  let commitMsg = $'A new release for version: ($releaseVer) created by Release command.'
   git tag $releaseVer -am $commitMsg;
   # Remove local major version tag if exists and ignore errors
   do -i { git tag -d $majorTag | complete | ignore }
