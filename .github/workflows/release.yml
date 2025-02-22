@@ -41,6 +41,9 @@ jobs:
 
       - name: Build and Publish Nu Pkgs
         shell: nu {0}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMFURY_TOKEN: ${{ secrets.GEMFURY_TOKEN }}
         run: |
           use ${{ github.workspace }}/nu/release.nu *
           version | print
@@ -52,4 +55,5 @@ jobs:
             }
           fetch pkg $arch
           build pkg $arch
+          publish pkg $arch
 

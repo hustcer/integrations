@@ -38,7 +38,7 @@ default:
 # Release a new version for Nushell
 release *OPTIONS:
   @overlay use {{ join(NU_DISTRO_PATH, 'nu', 'release.nu') }}; \
-    fetch pkg {{OPTIONS}}; build pkg {{OPTIONS}}
+    fetch pkg {{OPTIONS}}; build pkg {{OPTIONS}}; publish pkg {{OPTIONS}}
 
 # Plugins need to be registered only once after nu v0.61
 _setup:

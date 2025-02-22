@@ -17,7 +17,8 @@ export def 'fetch pkg' [
   if $arch not-in $ARCH_MAP {
     print $'Invalid architecture: (ansi r)($arch)(ansi reset)'; exit 1
   }
-  let assets = http get https://api.github.com/repos/nushell/nushell/releases
+  let BASE_HEADER = [Authorization $'Bearer ($env.GITHUB_TOKEN)' Accept application/vnd.github.v3+json]
+  let assets = http get -H $BASE_HEADER https://api.github.com/repos/nushell/nushell/releases
       | sort-by -r created_at
       | select name created_at assets
       | get 0
@@ -43,5 +44,15 @@ export def 'build pkg' [
     NU_VERSION_RELEASE: 1
   }
   nfpm pkg --packager deb
-  ls -f nushell*
+  ls -f nushell* | print
+}
+
+# Publish the Nushell deb packages to Gemfury
+export def 'publish pkg' [
+  arch: string,   # The target architecture, e.g. amd64 & arm64
+] {
+  glob *($arch).deb | each {|pkg|
+    print $'Uploading the ($pkg | path basename) package to Gemfury...'
+    fury push deb:($pkg) --account nushell --api-token $env.GEMFURY_TOKEN
+  }
 }
