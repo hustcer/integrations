@@ -30,7 +30,7 @@ jobs:
         run: |
           # Append Gemfury Nushell apk repository
           echo "https://alpine.fury.io/nushell/" | tee -a /etc/apk/repositories
-          apk update
+          apk update || true
           # Use --allow-untrusted since the apk package is not signed currently
           apk add --allow-untrusted nushell
           which nu
