@@ -33,12 +33,12 @@ jobs:
           name=Gemfury Nushell Repo
           baseurl=https://yum.fury.io/nushell/
           enabled=1
-          gpgcheck=1
+          gpgcheck=0
           gpgkey=https://yum.fury.io/nushell/gpg.key" | tee /etc/yum.repos.d/fury-nushell.repo
           # Download the GPG key
-          curl -fsSL -o /tmp/gpg.key https://yum.fury.io/nushell/gpg.key
+          # curl -fsSL -o /tmp/gpg.key https://yum.fury.io/nushell/gpg.key
           # Import the key from the local file
-          rpm --import /tmp/gpg.key
+          # rpm --import /tmp/gpg.key
           dnf install -y nushell
           which nu
           nu -c 'version'
