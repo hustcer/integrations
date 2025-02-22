@@ -5,8 +5,10 @@
 # Usage:
 #   docker run -it --rm -v $"(pwd):/work" --platform linux/amd64 ubuntu:latest
 #   fury packages -a nushell
-#   fury versions nushell -a nushell
+#   fury versions rpm:nushell -a nushell
+#   fury versions deb:nushell -a nushell
 #   fury yank nushell -v 0.102.0-1 -a nushell
+#   fury yank rpm:nushell -v 0.102.0-1 -a nushell
 # REF:
 #   - https://gemfury.com/guide/cli/
 #   - https://gemfury.com/help/gpg-signing/
@@ -40,7 +42,7 @@ export def 'fetch release' [
 }
 
 # Build the Nushell deb packages
-export def 'publish pkg' [
+export def --env 'publish pkg' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
   let meta = open meta.json
@@ -53,9 +55,11 @@ export def 'publish pkg' [
     NU_VERSION_REVISION: $meta.revision
   }
   nfpm pkg --packager deb
+  nfpm pkg --packager rpm
   ls -f nushell* | print
 
-  push deb $arch
+  # push deb $arch
+  push rpm $arch
 }
 
 # Publish the Nushell deb packages to Gemfury
@@ -63,6 +67,20 @@ export def 'push deb' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
   let pkg = ls | where name =~ $'($arch).deb' | get name.0
+  print $'Uploading the ($pkg) package to Gemfury...'
+  fury push $pkg --account nushell --api-token $env.GEMFURY_TOKEN
+}
+
+# Publish the Nushell rpm packages to Gemfury
+export def 'push rpm' [
+  arch: string,   # The target architecture, e.g. amd64 & arm64
+] {
+  const ARCH_MAP = {
+    'amd64': 'x86_64',
+    'arm64': 'aarch64',
+  }
+  let arch = $ARCH_MAP | get $arch
+  let pkg = ls | where name =~ $'($arch).rpm' | get name.0
   print $'Uploading the ($pkg) package to Gemfury...'
   fury push $pkg --account nushell --api-token $env.GEMFURY_TOKEN
 }

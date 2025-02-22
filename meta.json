@@ -1,7 +1,7 @@
 {
     "name": "nushell",
     "version": "0.102.0",
-    "revision": "3",
+    "revision": "1",
     "author": "hustcer",
     "license": "MIT",
     "github": "https://github.com/nushell/nushell",
