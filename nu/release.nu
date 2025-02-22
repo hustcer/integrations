@@ -36,7 +36,8 @@ export def 'fetch release' [
 export def 'publish pkg' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
-  let version = run-external 'release/nu' '--version' | complete | get stdout
+  # Trim is required to remove the leading and trailing whitespaces here
+  let version = run-external 'release/nu' '--version' | complete | get stdout | str trim
   let version = if ($version | is-empty) { '0.102.0' } else { $version }
   load-env {
     NU_VERSION: $version
@@ -53,9 +54,7 @@ export def 'publish pkg' [
 export def 'push deb' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
-  glob *($arch).deb | each {|pkg|
-    let pkg = ($pkg | path basename) | str join ''
-    print $'Uploading the ($pkg) package to Gemfury...'
-    fury push $'deb:($pkg)' --account nushell --api-token $env.GEMFURY_TOKEN
-  }
+  let pkg = ls | where name =~ $'($arch).deb' | get name.0
+  print $'Uploading the ($pkg) package to Gemfury...'
+  fury push $pkg --account nushell --api-token $env.GEMFURY_TOKEN
 }
