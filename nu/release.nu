@@ -9,6 +9,7 @@
 #   fury yank nushell -v 0.102.0-1 -a nushell
 # REF:
 #   - https://gemfury.com/guide/cli/
+#   - https://gemfury.com/help/gpg-signing/
 #   - https://manage.fury.io/dashboard/nushell
 #
 

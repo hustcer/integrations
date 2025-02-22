@@ -16,7 +16,7 @@ on:
       - '**.md'
 
 jobs:
-  publish-pkgs:
+  install-pkgs:
     strategy:
       fail-fast: false
       matrix:
