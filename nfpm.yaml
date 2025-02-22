@@ -41,7 +41,7 @@ version: ${NU_VERSION}
 # This is appended to the `version` after `prerelease`. This should be
 # incremented if you release an updated package of the same upstream version,
 # and it should reset to 1 when bumping the version.
-release: ${NU_VERSION_RELEASE}
+release: ${NU_VERSION_REVISION}
 
 # Section.
 # This is only used by the deb packager.
@@ -58,7 +58,7 @@ priority: extra
 # This will expand any env var you set in the field, e.g. maintainer: ${GIT_COMMITTER_NAME} <${GIT_COMMITTER_EMAIL}>
 # Defaults to empty on rpm and apk
 # Leaving the 'maintainer' field unset will not be allowed in a future version
-maintainer: hustcer <hustcer@outlook.com>
+maintainer: The Nushell Project Developers
 
 # Description.
 # This will expand any env var you set in the field, e.g. description: ${DESCRIPTION}

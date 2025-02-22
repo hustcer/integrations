@@ -4,6 +4,12 @@
 # Description: Script to release Nushell packages for various Linux distributions.
 # Usage:
 #   docker run -it --rm -v $"(pwd):/work" --platform linux/amd64 ubuntu:latest
+#   fury packages -a nushell
+#   fury versions nushell -a nushell
+#   fury yank nushell -v 0.102.0-1 -a nushell
+# REF:
+#   - https://gemfury.com/guide/cli/
+#   - https://manage.fury.io/dashboard/nushell
 #
 
 # Fetch the latest Nushell release package from GitHub
@@ -36,13 +42,14 @@ export def 'fetch release' [
 export def 'publish pkg' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
+  let meta = open meta.json
   # Trim is required to remove the leading and trailing whitespaces here
   let version = run-external 'release/nu' '--version' | complete | get stdout | str trim
-  let version = if ($version | is-empty) { '0.102.0' } else { $version }
+  let version = if ($version | is-empty) { $meta.version } else { $version }
   load-env {
     NU_VERSION: $version
     NU_PKG_ARCH: $arch
-    NU_VERSION_RELEASE: 1
+    NU_VERSION_REVISION: $meta.revision
   }
   nfpm pkg --packager deb
   ls -f nushell* | print

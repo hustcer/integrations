@@ -4,19 +4,19 @@
 #   - https://github.com/marketplace/actions/checkout
 #   - https://github.com/chawyehsu/moonbit-binaries/releases
 
-name: Nu Pkgs
+name: Publish Nu Pkgs
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-      - develop
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
+      - '!*nightly*'  # Don't trigger release for nightly tags
 
     paths-ignore:
       - '**.md'
 
 jobs:
-  release-pkgs:
+  publish-pkgs:
     strategy:
       fail-fast: false
       matrix:
