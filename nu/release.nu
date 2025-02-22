@@ -15,12 +15,6 @@
 #   - https://manage.fury.io/dashboard/nushell
 #
 
-const ENABLE_PKGS = {
-  'apk': true,
-  'deb': false,
-  'rpm': false,
-}
-
 # Fetch the latest Nushell release package from GitHub
 export def 'fetch release' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
@@ -60,15 +54,15 @@ export def --env 'publish pkg' [
     NU_PKG_ARCH: $arch
     NU_VERSION_REVISION: $meta.revision
   }
-  if $ENABLE_PKGS.deb { nfpm pkg --packager deb }
-  if $ENABLE_PKGS.rpm { nfpm pkg --packager rpm }
-  if $ENABLE_PKGS.apk { nfpm pkg --packager apk }
+  if $meta.pkgs.deb { nfpm pkg --packager deb }
+  if $meta.pkgs.rpm { nfpm pkg --packager rpm }
+  if $meta.pkgs.apk { nfpm pkg --packager apk }
 
   ls -f nushell* | print
 
-  if $ENABLE_PKGS.deb { push deb $arch }
-  if $ENABLE_PKGS.rpm { push rpm $arch }
-  if $ENABLE_PKGS.apk { push apk $arch }
+  if $meta.pkgs.deb { push deb $arch }
+  if $meta.pkgs.rpm { push rpm $arch }
+  if $meta.pkgs.apk { push apk $arch }
 }
 
 # Publish the Nushell apk packages to Gemfury
