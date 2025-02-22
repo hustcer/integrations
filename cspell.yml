@@ -18,6 +18,7 @@ words:
 - subkey
 - mipsle
 - GOARCH
+- dearmor
 - nushell
 - Gemfury
 - hustcer
