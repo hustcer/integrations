@@ -7,7 +7,7 @@
 #
 
 # Fetch the latest Nushell release package from GitHub
-export def 'fetch pkg' [
+export def 'fetch release' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
   const ARCH_MAP = {
@@ -33,7 +33,7 @@ export def 'fetch pkg' [
 }
 
 # Build the Nushell deb packages
-export def 'build pkg' [
+export def 'publish pkg' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
   let version = run-external 'release/nu' '--version' | complete | get stdout
@@ -45,14 +45,17 @@ export def 'build pkg' [
   }
   nfpm pkg --packager deb
   ls -f nushell* | print
+
+  push deb $arch
 }
 
 # Publish the Nushell deb packages to Gemfury
-export def 'publish pkg' [
+export def 'push deb' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
   glob *($arch).deb | each {|pkg|
-    print $'Uploading the ($pkg | path basename) package to Gemfury...'
-    fury push deb:($pkg) --account nushell --api-token $env.GEMFURY_TOKEN
+    let pkg = ($pkg | path basename) | str join ''
+    print $'Uploading the ($pkg) package to Gemfury...'
+    fury push $'deb:($pkg)' --account nushell --api-token $env.GEMFURY_TOKEN
   }
 }
