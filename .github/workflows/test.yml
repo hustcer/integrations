@@ -2,7 +2,7 @@
 #   - Release Nu Pkgs
 # REF:
 #   - https://github.com/marketplace/actions/checkout
-#   - https://github.com/chawyehsu/moonbit-binaries/releases
+#   - https://gemfury.com/guide/alpine/configure-apk/
 
 name: Test Install Nu Pkgs
 on:
@@ -16,6 +16,26 @@ on:
       - '**.md'
 
 jobs:
+  install-apk:
+    name: Install Nu apk
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    container:
+      image: alpine:latest
+    steps:
+      - name: Install Nushell APK
+        run: |
+          # Append Gemfury Nushell apk repository
+          echo "https://alpine.fury.io/nushell/" | tee -a /etc/apk/repositories
+          apk update
+          # Use --allow-untrusted since the apk package is not signed currently
+          apk add --allow-untrusted nushell
+          which nu
+          nu -c 'version'
+
   install-rpm:
     name: Install Nu rpm on RHC
     strategy:
