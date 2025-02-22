@@ -15,7 +15,7 @@ which nu
 nu -c 'version'
 ```
 
-## Install Nushell for RedHat/Fedora/CentOS/Rocky Linux
+## Install Nushell for RedHat/Fedora/Rocky Linux
 
 ```nu
 echo "[gemfury-nushell]
@@ -25,7 +25,6 @@ enabled=1
 gpgcheck=0
 gpgkey=https://yum.fury.io/nushell/gpg.key" | tee /etc/yum.repos.d/fury-nushell.repo
 dnf install -y nushell
-which nu
 nu -c 'version'
 ```
 

@@ -37,14 +37,19 @@ jobs:
           nu -c 'version'
 
   install-rpm:
-    name: Install Nu rpm on RHC
+    name: Install Nu rpm
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, ubuntu-24.04-arm]
         image:
-          - registry.access.redhat.com/ubi8/ubi:latest
-          - registry.access.redhat.com/ubi9/ubi:latest
+          - fedora:latest
+          - fedora:40
+          - fedora:39
+          - rockylinux:9
+          - rockylinux:8
+          - redhat/ubi9:latest
+          - redhat/ubi8:latest
     runs-on: ${{ matrix.os }}
     container:
       image: ${{ matrix.image }}
@@ -60,8 +65,7 @@ jobs:
           gpgkey=https://yum.fury.io/nushell/gpg.key" | tee /etc/yum.repos.d/fury-nushell.repo
           # Install Nushell via dnf
           dnf install -y nushell
-          # Print nushell executable and version to verify installation
-          which nu
+          # Print nushell version to verify installation
           nu -c 'version'
 
   install-deb:
