@@ -15,6 +15,12 @@
 #   - https://manage.fury.io/dashboard/nushell
 #
 
+const ENABLE_PKGS = {
+  'apk': true,
+  'deb': false,
+  'rpm': false,
+}
+
 # Fetch the latest Nushell release package from GitHub
 export def 'fetch release' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
@@ -54,12 +60,29 @@ export def --env 'publish pkg' [
     NU_PKG_ARCH: $arch
     NU_VERSION_REVISION: $meta.revision
   }
-  nfpm pkg --packager deb
-  nfpm pkg --packager rpm
+  if $ENABLE_PKGS.deb { nfpm pkg --packager deb }
+  if $ENABLE_PKGS.rpm { nfpm pkg --packager rpm }
+  if $ENABLE_PKGS.apk { nfpm pkg --packager apk }
+
   ls -f nushell* | print
 
-  # push deb $arch
-  push rpm $arch
+  if $ENABLE_PKGS.deb { push deb $arch }
+  if $ENABLE_PKGS.rpm { push rpm $arch }
+  if $ENABLE_PKGS.apk { push apk $arch }
+}
+
+# Publish the Nushell apk packages to Gemfury
+export def 'push apk' [
+  arch: string,   # The target architecture, e.g. amd64 & arm64
+] {
+  const ARCH_ALIAS_MAP = {
+    'amd64': 'x86_64',
+    'arm64': 'aarch64',
+  }
+  let arch = $ARCH_ALIAS_MAP | get $arch
+  let pkg = ls | where name =~ $'($arch).apk' | get name.0
+  print $'Uploading the ($pkg) package to Gemfury...'
+  fury push $pkg --account nushell --api-token $env.GEMFURY_TOKEN
 }
 
 # Publish the Nushell deb packages to Gemfury
@@ -75,11 +98,11 @@ export def 'push deb' [
 export def 'push rpm' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
-  const ARCH_MAP = {
+  const ARCH_ALIAS_MAP = {
     'amd64': 'x86_64',
     'arm64': 'aarch64',
   }
-  let arch = $ARCH_MAP | get $arch
+  let arch = $ARCH_ALIAS_MAP | get $arch
   let pkg = ls | where name =~ $'($arch).rpm' | get name.0
   print $'Uploading the ($pkg) package to Gemfury...'
   fury push $pkg --account nushell --api-token $env.GEMFURY_TOKEN
