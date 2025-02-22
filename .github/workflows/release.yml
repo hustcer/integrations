@@ -30,14 +30,16 @@ jobs:
       - name: Setup Nushell
         uses: hustcer/setup-nu@v3
 
-      - name: Install nfpm
+      - name: Install nfpm & Gemfury CLI
         run: |
+          echo "deb [trusted=yes] https://apt.fury.io/cli/ * *" | sudo tee /etc/apt/sources.list.d/fury-cli.list
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
           sudo apt update
-          sudo apt install nfpm
+          sudo apt install nfpm fury-cli
           nfpm --version
+          fury --version
 
-      - name: Check Nushell Version
+      - name: Build and Publish Nu Pkgs
         shell: nu {0}
         run: |
           use ${{ github.workspace }}/nu/release.nu *
