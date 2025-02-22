@@ -16,13 +16,40 @@ on:
       - '**.md'
 
 jobs:
-  install-pkgs:
+  install-rpm:
+    name: Install Nu rpm on RHC
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
+    container:
+      image: registry.access.redhat.com/ubi8/ubi:latest
+    steps:
+      - name: Test Install Nushell
+        run: |
+          # Create repo config file
+          echo "[gemfury-nushell]
+          name=Gemfury Nushell Repo
+          baseurl=https://yum.fury.io/nushell/
+          enabled=1
+          gpgcheck=1
+          gpgkey=https://yum.fury.io/nushell/gpg.key" | tee /etc/yum.repos.d/fury-nushell.repo
+          # Download the GPG key
+          curl -fsSL -o /tmp/gpg.key https://yum.fury.io/nushell/gpg.key
+          # Import the key from the local file
+          rpm --import /tmp/gpg.key
+          dnf install -y nushell
+          which nu
+          nu -c 'version'
+
+  install-deb:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, ubuntu-22.04-arm, ubuntu-24.04, ubuntu-24.04-arm]
     runs-on: ${{ matrix.os }}
-    name: Install Nu Pkgs@${{ matrix.os }}
+    name: Install Nu deb@${{ matrix.os }}
     steps:
       - name: Test Install Nushell from Gemfury
         run: |

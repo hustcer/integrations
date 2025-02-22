@@ -18,7 +18,9 @@ words:
 - subkey
 - mipsle
 - GOARCH
+- gpgkey
 - dearmor
+- gpgcheck
 - nushell
 - Gemfury
 - hustcer
