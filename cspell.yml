@@ -13,6 +13,7 @@ words:
 - DISTRO
 - ECODE
 - endfor
+- trixie
 - dotenv
 - gstat
 - subkey

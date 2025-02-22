@@ -84,3 +84,26 @@ jobs:
           sudo apt install nushell
           which nu
           nu -c 'version'
+
+  install-on-debian:
+    name: Install Nu deb
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+        image:
+          - debian:trixie
+          - debian:bookworm
+          - debian:bullseye
+    runs-on: ${{ matrix.os }}
+    container:
+      image: ${{ matrix.image }}
+    steps:
+      - name: Test Install Nushell
+        run: |
+          curl -fsSL https://apt.fury.io/nushell/gpg.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/fury-nushell.gpg
+          echo "deb https://apt.fury.io/nushell/ /" | tee /etc/apt/sources.list.d/fury.list
+          apt update
+          apt install nushell
+          which nu
+          nu -c 'version'
