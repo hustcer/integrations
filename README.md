@@ -38,7 +38,7 @@ which nu
 nu -c 'version'
 ```
 
-Read the [`test` workflow](https://github.com/hustcer/distro/blob/main/.github/workflows/test.yml)
+OR Read the [Test workflow](https://github.com/hustcer/distro/blob/main/.github/workflows/test.yml) for more details.
 
 ## License
 
