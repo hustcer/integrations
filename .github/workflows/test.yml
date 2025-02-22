@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Test Install Nushell from Gemfury
         run: |
-          echo "deb [trusted=yes] https://apt.fury.io/nushell/ /" | sudo tee /etc/apt/sources.list.d/fury.list
+          echo "deb https://apt.fury.io/nushell/ /" | sudo tee /etc/apt/sources.list.d/fury.list
           sudo apt update
           sudo apt install nushell
           which nu

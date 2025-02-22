@@ -15,6 +15,7 @@ words:
 - endfor
 - dotenv
 - gstat
+- subkey
 - mipsle
 - GOARCH
 - nushell
