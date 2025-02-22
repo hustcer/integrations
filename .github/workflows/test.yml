@@ -1,0 +1,33 @@
+# Description:
+#   - Release Nu Pkgs
+# REF:
+#   - https://github.com/marketplace/actions/checkout
+#   - https://github.com/chawyehsu/moonbit-binaries/releases
+
+name: Test Install Nu Pkgs
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  publish-pkgs:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-22.04-arm]
+    runs-on: ${{ matrix.os }}
+    name: Install Nu Pkgs@${{ matrix.os }}
+    steps:
+      - name: Test Install Nushell from Gemfury
+        run: |
+          echo "deb [trusted=yes] https://apt.fury.io/nushell/ /" | sudo tee /etc/apt/sources.list.d/fury.list
+          sudo apt update
+          sudo apt install nushell
+          which nu
+          nu -c 'version'
