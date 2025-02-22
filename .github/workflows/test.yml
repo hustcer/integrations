@@ -22,24 +22,25 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, ubuntu-24.04-arm]
+        image:
+          - registry.access.redhat.com/ubi8/ubi:latest
+          - registry.access.redhat.com/ubi9/ubi:latest
     runs-on: ${{ matrix.os }}
     container:
-      image: registry.access.redhat.com/ubi8/ubi:latest
+      image: ${{ matrix.image }}
     steps:
       - name: Test Install Nushell
         run: |
-          # Create repo config file
+          # Create repo config file pointing to Gemfury
           echo "[gemfury-nushell]
           name=Gemfury Nushell Repo
           baseurl=https://yum.fury.io/nushell/
           enabled=1
           gpgcheck=0
           gpgkey=https://yum.fury.io/nushell/gpg.key" | tee /etc/yum.repos.d/fury-nushell.repo
-          # Download the GPG key
-          # curl -fsSL -o /tmp/gpg.key https://yum.fury.io/nushell/gpg.key
-          # Import the key from the local file
-          # rpm --import /tmp/gpg.key
+          # Install Nushell via dnf
           dnf install -y nushell
+          # Print nushell executable and version to verify installation
           which nu
           nu -c 'version'
 
