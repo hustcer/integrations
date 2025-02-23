@@ -43,7 +43,8 @@ export def 'fetch release' [
 
 # Build the Nushell deb packages
 export def --env 'publish pkg' [
-  arch: string,   # The target architecture, e.g. amd64 & arm64
+  arch: string,       # The target architecture, e.g. amd64 & arm64
+  --create-release,   # Create a new release on GitHub
 ] {
   let meta = open meta.json
   # Trim is required to remove the leading and trailing whitespaces here
@@ -60,9 +61,22 @@ export def --env 'publish pkg' [
 
   ls -f nushell* | print
 
+  if $create_release { create-github-release $version }
+
   if $meta.pkgs.deb { push deb $arch }
   if $meta.pkgs.rpm { push rpm $arch }
   if $meta.pkgs.apk { push apk $arch }
+}
+
+# Create a new release on GitHub, and upload the artifacts
+def create-github-release [version: string] {
+  let repo = 'nushell/integrations'
+  let releases = gh release list -R $repo --json name | from json | get name
+  if $version not-in $releases {
+    gh release create $version -R $repo --title $version --notes $version
+  }
+  # --clobber   Overwrite existing assets of the same name
+  gh release upload $version -R $repo --clobber nushell*.deb nushell*.rpm nushell*.apk
 }
 
 # Publish the Nushell apk packages to Gemfury
@@ -75,6 +89,7 @@ export def 'push apk' [
   }
   let arch = $ARCH_ALIAS_MAP | get $arch
   let pkg = ls | where name =~ $'($arch).apk' | get name.0
+  if (pkg exists alpine $arch) { print $'Package ($pkg) already exists on Gemfury.'; return }
   print $'Uploading the ($pkg) package to Gemfury...'
   fury push $pkg --account nushell --api-token $env.GEMFURY_TOKEN
 }
@@ -84,6 +99,7 @@ export def 'push deb' [
   arch: string,   # The target architecture, e.g. amd64 & arm64
 ] {
   let pkg = ls | where name =~ $'($arch).deb' | get name.0
+  if (pkg exists deb $arch) { print $'Package ($pkg) already exists on Gemfury.'; return }
   print $'Uploading the ($pkg) package to Gemfury...'
   fury push $pkg --account nushell --api-token $env.GEMFURY_TOKEN
 }
@@ -98,6 +114,20 @@ export def 'push rpm' [
   }
   let arch = $ARCH_ALIAS_MAP | get $arch
   let pkg = ls | where name =~ $'($arch).rpm' | get name.0
+  if (pkg exists rpm $arch) { print $'Package ($pkg) already exists on Gemfury.'; return }
   print $'Uploading the ($pkg) package to Gemfury...'
   fury push $pkg --account nushell --api-token $env.GEMFURY_TOKEN
+}
+
+# Check if the package exists on Gemfury
+export def 'pkg exists' [
+  type: string,   # The package type, e.g. deb & rpm
+  arch: string,   # The target architecture, e.g. amd64 & arm64
+] {
+  let versions = fury versions $'($type):nushell' -a nushell
+      | lines | skip 3 | str join "\n" | detect columns
+  let revision = $env.NU_VERSION_REVISION? | default 0 | into int
+  let rev = if $type == 'alpine' { $'r($revision)' } else { $revision }
+  let ver = if $revision > 0 { $'($env.NU_VERSION)-($rev)' } else { $env.NU_VERSION }
+  ($versions | where filename =~ $arch and version == $ver | length) > 0
 }
