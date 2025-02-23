@@ -1,5 +1,6 @@
-.env
+.vscode
 release/
-.scripts/
+.env
 *.deb
 *.rpm
+*.apk
