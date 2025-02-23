@@ -42,9 +42,8 @@ release *OPTIONS:
 
 # List fury packages for Nushell
 list:
-  @fury versions rpm:nushell -a nushell; \
-    fury versions deb:nushell -a nushell; \
-    fury versions alpine:nushell -a nushell
+  @overlay use {{ join(NU_DISTRO_PATH, 'nu', 'tools.nu') }}; \
+    pkg list
 
 # Plugins need to be registered only once after nu v0.61
 _setup:
