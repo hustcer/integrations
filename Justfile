@@ -45,6 +45,11 @@ list:
   @overlay use {{ join(NU_DISTRO_PATH, 'nu', 'tools.nu') }}; \
     pkg list
 
+# Yank the specified version of Nushell packages
+yank *OPTIONS:
+  @overlay use {{ join(NU_DISTRO_PATH, 'nu', 'tools.nu') }}; \
+    yank version {{OPTIONS}}
+
 # Plugins need to be registered only once after nu v0.61
 _setup:
   @register -e json {{ join(NU_DIR, _query_plugin) }}
