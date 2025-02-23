@@ -40,6 +40,12 @@ release *OPTIONS:
   @overlay use {{ join(NU_DISTRO_PATH, 'nu', 'release.nu') }}; \
     fetch release {{OPTIONS}}; publish pkg {{OPTIONS}}
 
+# List fury packages for Nushell
+list:
+  @fury versions rpm:nushell -a nushell; \
+    fury versions deb:nushell -a nushell; \
+    fury versions alpine:nushell -a nushell
+
 # Plugins need to be registered only once after nu v0.61
 _setup:
   @register -e json {{ join(NU_DIR, _query_plugin) }}
