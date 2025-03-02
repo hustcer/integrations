@@ -153,3 +153,20 @@ rpm:
     # This will expand any env var you set in the field, e.g. key_id: ${RPM_SIGNING_KEY_ID}
     key_id: ${SIGNING_KEY_ID}
 
+apk:
+  # The package is signed if a key_file is set
+  signature:
+    # RSA private key in the PEM format. The passphrase is taken from
+    # the environment variable $NFPM_APK_PASSPHRASE with a fallback
+    # to $NFPM_PASSPHRASE.
+    # This will expand any env var you set in the field, e.g. key_file: ${SIGNING_KEY_FILE}
+    key_file: nu-private.key
+
+    # The name of the signing key. When verifying a package, the signature
+    # is matched to the public key store in /etc/apk/keys/<key_name>.rsa.pub.
+    # If unset, it defaults to the maintainer email address.
+    key_name: nushell
+
+    # APK does not use pgp keys, so the key_id field is ignored.
+    key_id: ignored
+
